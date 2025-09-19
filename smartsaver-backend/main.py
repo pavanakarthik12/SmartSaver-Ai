@@ -1,7 +1,17 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from routes import expenses, budget, whatif, forecast, chat, stocks
 
 app = FastAPI(title="SmartSaver AI Backend", version="1.0.0")
+
+# CORS for frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include all routers
 app.include_router(expenses.router, prefix="/expenses", tags=["expenses"])
