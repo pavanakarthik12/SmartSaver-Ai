@@ -1,5 +1,6 @@
 # chat.py
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from models import ChatRequest, ChatResponse
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -8,6 +9,20 @@ import os
 load_dotenv()
 
 router = APIRouter()
+
+@router.options("/")
+async def chat_options():
+    """
+    Handle CORS preflight requests for chat endpoint
+    """
+    return JSONResponse(
+        content={},
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        }
+    )
 
 @router.post("/", response_model=ChatResponse)
 async def chat(request: ChatRequest):
