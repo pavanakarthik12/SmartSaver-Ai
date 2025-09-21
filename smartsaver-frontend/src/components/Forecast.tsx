@@ -31,93 +31,99 @@ const Forecast: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-6">
+      <div className="p-6 bg-primary min-h-screen">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-          <div className="bg-gray-200 rounded-lg h-64"></div>
+          <div className="h-8 bg-tertiary rounded w-1/4 mb-6 loading-skeleton"></div>
+          <div className="bg-tertiary rounded-lg h-64 loading-skeleton"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">AI Predictions & Forecasts</h1>
+    <div className="p-6 bg-primary min-h-screen">
+      <h1 className="text-4xl font-bold text-primary mb-8 font-heading">AI Predictions & Forecasts</h1>
       
       {/* Summary Card */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-sm p-6 mb-8 text-white">
+      <div className="card-elevated p-8 mb-8 bg-gradient-accent text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold mb-2">Total Predicted Savings</h2>
-            <p className="text-4xl font-bold">${totalSavings.toFixed(2)}</p>
-            <p className="text-blue-100 mt-2">Based on AI analysis of your spending patterns</p>
+            <h2 className="text-3xl font-bold mb-3 font-heading">Total Predicted Savings</h2>
+            <p className="text-5xl font-bold mb-3 font-heading">${totalSavings.toFixed(2)}</p>
+            <p className="text-red-100 text-lg font-body">Based on AI analysis of your spending patterns</p>
           </div>
-          <TrendingUp className="h-16 w-16 text-blue-200" />
+          <TrendingUp className="h-20 w-20 text-red-200" />
         </div>
       </div>
 
       {/* Forecast Chart */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Predicted Savings by Category</h3>
+      <div className="chart-container mb-8">
+        <h3 className="text-xl font-bold text-primary mb-6 font-heading">Predicted Savings by Category</h3>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="category" />
-            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" opacity={0.3} />
+            <XAxis dataKey="category" stroke="var(--text-secondary)" />
+            <YAxis stroke="var(--text-secondary)" />
             <Tooltip 
               formatter={(value: number) => [`$${value.toFixed(2)}`, 'Predicted Savings']}
               labelFormatter={(label) => `Category: ${label}`}
+              contentStyle={{
+                backgroundColor: 'var(--secondary-bg)',
+                border: '1px solid var(--accent-red)',
+                borderRadius: 'var(--radius-sm)',
+                color: 'var(--text-primary)'
+              }}
             />
-            <Bar dataKey="savings" fill="#3B82F6" />
+            <Bar dataKey="savings" fill="var(--accent-red)" />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       {/* Detailed Forecast Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {Object.entries(forecast).map(([category, savings]) => {
           const isPositive = savings > 0;
           const isNegative = savings < 0;
           
           return (
-            <div key={category} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="text-lg font-semibold text-gray-900">{category}</h4>
+            <div key={category} className="card-elevated p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="text-xl font-bold text-primary font-heading">{category}</h4>
                 {isPositive ? (
-                  <TrendingUp className="h-6 w-6 text-green-600" />
+                  <TrendingUp className="h-6 w-6 text-green-400" />
                 ) : isNegative ? (
-                  <TrendingDown className="h-6 w-6 text-red-600" />
+                  <TrendingDown className="h-6 w-6 text-red-400" />
                 ) : (
-                  <AlertCircle className="h-6 w-6 text-yellow-600" />
+                  <AlertCircle className="h-6 w-6 text-yellow-400" />
                 )}
               </div>
               
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-600">Predicted Savings</span>
-                  <span className={`text-2xl font-bold ${
-                    isPositive ? 'text-green-600' : isNegative ? 'text-red-600' : 'text-gray-600'
+              <div className="space-y-4">
+                <div className="text-center p-4 bg-tertiary/50 rounded-lg">
+                  <span className="text-sm font-medium text-secondary font-body">Predicted Savings</span>
+                  <p className={`text-3xl font-bold font-heading ${
+                    isPositive ? 'text-green-400' : isNegative ? 'text-red-400' : 'text-muted'
                   }`}>
                     ${savings.toFixed(2)}
-                  </span>
+                  </p>
                 </div>
                 
                 <div className="mt-4">
                   {isPositive ? (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                      <p className="text-sm text-green-800">
+                    <div className="bg-green-900 border border-green-700 rounded-lg p-4">
+                      <p className="text-sm text-green-200 font-body">
                         💚 You're on track to save ${savings.toFixed(2)} in this category
                       </p>
                     </div>
                   ) : isNegative ? (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                      <p className="text-sm text-red-800">
+                    <div className="bg-red-900 border border-red-700 rounded-lg p-4">
+                      <p className="text-sm text-red-200 font-body">
                         ⚠️ You may overspend by ${Math.abs(savings).toFixed(2)} in this category
                       </p>
                     </div>
                   ) : (
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                      <p className="text-sm text-yellow-800">
+                    <div className="bg-yellow-900 border border-yellow-700 rounded-lg p-4">
+                      <p className="text-sm text-yellow-200 font-body">
                         📊 Spending is expected to match your budget in this category
                       </p>
                     </div>
@@ -130,20 +136,20 @@ const Forecast: React.FC = () => {
       </div>
 
       {/* AI Insights */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Insights</h3>
-        <div className="space-y-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-medium text-blue-900 mb-2">🤖 How AI Predictions Work</h4>
-            <p className="text-sm text-blue-800">
+      <div className="card-elevated p-8">
+        <h3 className="text-2xl font-bold text-primary mb-6 font-heading">AI Insights</h3>
+        <div className="space-y-6">
+          <div className="bg-red-900 border border-red-700 rounded-lg p-6">
+            <h4 className="font-bold text-red-100 mb-3 text-lg font-heading">🤖 How AI Predictions Work</h4>
+            <p className="text-sm text-red-200 font-body">
               Our AI analyzes your historical spending patterns using machine learning algorithms 
               to predict future expenses and calculate potential savings for each category.
             </p>
           </div>
           
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h4 className="font-medium text-green-900 mb-2">💡 Recommendations</h4>
-            <p className="text-sm text-green-800">
+          <div className="bg-green-900 border border-green-700 rounded-lg p-6">
+            <h4 className="font-bold text-green-100 mb-3 text-lg font-heading">💡 Recommendations</h4>
+            <p className="text-sm text-green-200 font-body">
               Focus on categories with positive predicted savings to maximize your financial goals. 
               Consider adjusting budgets for categories showing negative predictions.
             </p>

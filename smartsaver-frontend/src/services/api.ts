@@ -55,6 +55,16 @@ export const apiService = {
     }
   },
 
+  // Add expense
+  addExpense: async (expense: Expense): Promise<void> => {
+    try {
+      await api.post('/expenses/', expense);
+    } catch (error) {
+      console.error('Error adding expense:', error);
+      throw error;
+    }
+  },
+
   // Get budgets
   getBudgets: async (): Promise<Budget[]> => {
     try {
@@ -69,6 +79,16 @@ export const apiService = {
         { category: "Bills", total_budget: 350, spent: 300 },
         { category: "Savings", total_budget: 400, spent: 200 }
       ];
+    }
+  },
+
+  // Update budget
+  updateBudget: async (category: string, budget: Budget): Promise<void> => {
+    try {
+      await api.put(`/budget/${category}`, budget);
+    } catch (error) {
+      console.error('Error updating budget:', error);
+      throw error;
     }
   },
 

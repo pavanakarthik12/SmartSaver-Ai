@@ -58,7 +58,10 @@ const Expenses: React.FC = () => {
     };
     
     try {
-      // Add to local state immediately for better UX
+      // Send to backend
+      await apiService.addExpense(expense);
+      
+      // Add to local state for immediate UI update
       setExpenses([...expenses, expense]);
       setNewExpense({ category: '', amount: '' });
       setShowAddForm(false);
@@ -67,9 +70,6 @@ const Expenses: React.FC = () => {
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccessMessage(''), 3000);
-      
-      // Here you would typically send to backend
-      // await apiService.addExpense(expense);
     } catch (error) {
       console.error('Error adding expense:', error);
       setErrors({ general: 'Failed to add expense. Please try again.' });
@@ -95,26 +95,26 @@ const Expenses: React.FC = () => {
     return { category, amount: total };
   });
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  const COLORS = ['#dc2626', '#b91c1c', '#991b1b', '#7f1d1d'];
 
   if (loading) {
     return (
-      <div className="p-6">
+      <div className="p-6 bg-primary min-h-screen">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-          <div className="bg-gray-200 rounded-lg h-64"></div>
+          <div className="h-8 bg-tertiary rounded w-1/4 mb-6 loading-skeleton"></div>
+          <div className="bg-tertiary rounded-lg h-64 loading-skeleton"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Expenses</h1>
+    <div className="p-6 bg-primary min-h-screen">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold text-primary font-heading">Expenses</h1>
         <button
           onClick={() => setShowAddForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+          className="btn-primary flex items-center space-x-2"
         >
           <Plus className="h-4 w-4" />
           <span>Add Expense</span>
@@ -123,42 +123,22 @@ const Expenses: React.FC = () => {
 
       {/* Success Message */}
       {successMessage && (
-        <div style={{ 
-          backgroundColor: '#d1fae5', 
-          border: '1px solid #10b981', 
-          color: '#065f46',
-          padding: '0.75rem',
-          borderRadius: '0.5rem',
-          marginBottom: '1.5rem'
-        }}>
+        <div className="bg-green-900 border border-green-700 text-green-200 p-4 rounded-lg mb-6">
           {successMessage}
         </div>
       )}
 
       {/* Add Expense Form */}
       {showAddForm && (
-        <div style={{ 
-          backgroundColor: 'white', 
-          borderRadius: '0.5rem', 
-          boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)', 
-          border: '1px solid #e5e7eb', 
-          padding: '1.5rem', 
-          marginBottom: '1.5rem' 
-        }}>
-          <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>Add New Expense</h2>
-          <form onSubmit={handleAddExpense} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="card-elevated p-6 mb-8">
+          <h2 className="text-xl font-bold text-primary mb-6 font-heading">Add New Expense</h2>
+          <form onSubmit={handleAddExpense} className="space-y-6">
             <div>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Category</label>
+              <label className="block text-sm font-medium text-secondary mb-2 font-body">Category</label>
               <select
                 value={newExpense.category}
                 onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: `1px solid ${errors.category ? '#dc2626' : '#d1d5db'}`,
-                  borderRadius: '0.5rem',
-                  fontSize: '1rem'
-                }}
+                className={`w-full ${errors.category ? 'border-red-500' : ''}`}
               >
                 <option value="">Select a category</option>
                 {categories.map(category => (
@@ -166,55 +146,32 @@ const Expenses: React.FC = () => {
                 ))}
               </select>
               {errors.category && (
-                <p style={{ color: '#dc2626', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.category}</p>
+                <p className="text-red-400 text-sm mt-2 font-body">{errors.category}</p>
               )}
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Amount</label>
+              <label className="block text-sm font-medium text-secondary mb-2 font-body">Amount</label>
               <input
                 type="number"
                 step="0.01"
                 value={newExpense.amount}
                 onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: `1px solid ${errors.amount ? '#dc2626' : '#d1d5db'}`,
-                  borderRadius: '0.5rem',
-                  fontSize: '1rem'
-                }}
+                className={`w-full ${errors.amount ? 'border-red-500' : ''}`}
                 placeholder="0.00"
               />
               {errors.amount && (
-                <p style={{ color: '#dc2626', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.amount}</p>
+                <p className="text-red-400 text-sm mt-2 font-body">{errors.amount}</p>
               )}
             </div>
             {errors.general && (
-              <div style={{ 
-                backgroundColor: '#fef2f2', 
-                border: '1px solid #fecaca', 
-                color: '#dc2626',
-                padding: '0.75rem',
-                borderRadius: '0.5rem'
-              }}>
+              <div className="bg-red-900 border border-red-700 text-red-200 p-4 rounded-lg">
                 {errors.general}
               </div>
             )}
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div className="flex gap-4">
               <button
                 type="submit"
-                style={{
-                  backgroundColor: '#2563eb',
-                  color: 'white',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '0.5rem',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                  fontWeight: '500'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+                className="btn-primary"
               >
                 Add Expense
               </button>
@@ -225,18 +182,7 @@ const Expenses: React.FC = () => {
                   setErrors({});
                   setNewExpense({ category: '', amount: '' });
                 }}
-                style={{
-                  backgroundColor: '#d1d5db',
-                  color: '#374151',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '0.5rem',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                  fontWeight: '500'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9ca3af'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#d1d5db'}
+                className="btn-secondary"
               >
                 Cancel
               </button>
@@ -246,9 +192,9 @@ const Expenses: React.FC = () => {
       )}
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Expenses by Category</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="chart-container">
+          <h3 className="text-xl font-bold text-primary mb-6 font-heading">Expenses by Category</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -265,45 +211,59 @@ const Expenses: React.FC = () => {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: 'var(--secondary-bg)',
+                  border: '1px solid var(--accent-red)',
+                  borderRadius: 'var(--radius-sm)',
+                  color: 'var(--text-primary)'
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Expense Amounts</h3>
+        <div className="chart-container">
+          <h3 className="text-xl font-bold text-primary mb-6 font-heading">Expense Amounts</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={barData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="category" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="amount" fill="#8884d8" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" opacity={0.3} />
+              <XAxis dataKey="category" stroke="var(--text-secondary)" />
+              <YAxis stroke="var(--text-secondary)" />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: 'var(--secondary-bg)',
+                  border: '1px solid var(--accent-red)',
+                  borderRadius: 'var(--radius-sm)',
+                  color: 'var(--text-primary)'
+                }}
+              />
+              <Bar dataKey="amount" fill="var(--accent-red)" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Expenses List */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Recent Expenses</h3>
+      <div className="card-elevated">
+        <div className="p-6 border-b border-border-color">
+          <h3 className="text-xl font-bold text-primary font-heading">Recent Expenses</h3>
         </div>
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-border-color">
           {expenses.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">
-              No expenses recorded yet. Add your first expense above.
+            <div className="p-8 text-center text-muted">
+              <p className="text-lg font-body">No expenses recorded yet. Add your first expense above.</p>
             </div>
           ) : (
             expenses.map((expense, index) => (
-              <div key={index} className="p-6 flex justify-between items-center">
+              <div key={index} className="p-6 flex justify-between items-center hover:bg-tertiary/50 transition-colors">
                 <div>
-                  <p className="font-medium text-gray-900">{expense.category}</p>
-                  <p className="text-sm text-gray-500">${expense.amount.toFixed(2)}</p>
+                  <p className="font-semibold text-primary font-body">{expense.category}</p>
+                  <p className="text-sm text-secondary font-body">${expense.amount.toFixed(2)}</p>
                 </div>
                 <button
                   onClick={() => handleDeleteExpense(index)}
-                  className="text-red-600 hover:text-red-800 p-1"
+                  className="text-red-400 hover:text-red-300 p-2 rounded-lg hover:bg-red-900/20 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

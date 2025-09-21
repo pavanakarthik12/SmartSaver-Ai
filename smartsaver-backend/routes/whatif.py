@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from models import WhatIfRequest
+from routes.budget import budgets_data
 
 router = APIRouter()
 
@@ -9,13 +10,8 @@ async def what_if_analysis(request: WhatIfRequest):
     """
     Recalculates budget with adjustments and returns updated budgets
     """
-    # Mock current budgets
-    current_budgets = [
-        {"category": "Food", "total_budget": 500, "spent": 250},
-        {"category": "Entertainment", "total_budget": 200, "spent": 100},
-        {"category": "Bills", "total_budget": 350, "spent": 300},
-        {"category": "Savings", "total_budget": 400, "spent": 200}
-    ]
+    # Use current budgets data
+    current_budgets = budgets_data.copy()
     
     # Apply adjustments
     updated_budgets = []

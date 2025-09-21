@@ -10,7 +10,7 @@ build/
 
 # === Python (backend) ===
 __pycache__/
-*.pyc
+*.pyccd
 *.pyo
 *.pyd
 *.db
